@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:16
+    container_name: broker_db
+    environment:
+      POSTGRES_USER: broker
+      POSTGRES_PASSWORD: broker
+      POSTGRES_DB: broker
+    ports:
+      - "5432:5432"
+    volumes:
+      - broker_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U broker -d broker"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ../apps/api
+    container_name: broker_api
+    environment:
+      DATABASE_URL: postgresql+psycopg://broker:broker@db:5432/broker
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+
+  market:
+    build:
+      context: ../apps/api
+    container_name: broker_market
+    environment:
+      DATABASE_URL: postgresql+psycopg://broker:broker@db:5432/broker
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    command: ["python", "-m", "app.market.engine"]
+
+  web:
+    build:
+      context: ../apps/web
+    container_name: broker_web
+    environment:
+      VITE_API_URL: "http://localhost:8000"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+volumes:
+  broker_pgdata:
