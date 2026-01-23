@@ -1,3 +1,14 @@
-# env
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+dist/
+
+# Env / secrets
 .env
-apps/api/.env
+
+# OS
+.DS_Store
