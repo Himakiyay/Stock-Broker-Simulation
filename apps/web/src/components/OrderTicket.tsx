@@ -179,6 +179,20 @@ export default function OrderTicket() {
 
   const disableSubmit = !!clientValidationMessage || m.isPending;
 
+  // ✅ Shared style so selects + number input align perfectly
+  const controlStyle: React.CSSProperties = {
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "10px 12px",
+    borderRadius: 10,
+    border: "1px solid #2a2f3b",
+    background: "#0f1115",
+    color: "white",
+    display: "block",
+    margin: 0,
+    appearance: "none",
+  };
+
   return (
     <div
       style={{
@@ -259,18 +273,7 @@ export default function OrderTicket() {
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
         <label style={{ display: "grid", gap: 6 }}>
           Symbol
-          <select
-            value={cleanedSymbol}
-            onChange={(e) => setSymbol(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              borderRadius: 10,
-              border: "1px solid #2a2f3b",
-              background: "#0f1115",
-              color: "white",
-            }}
-          >
+          <select value={cleanedSymbol} onChange={(e) => setSymbol(e.target.value)} style={controlStyle}>
             {VALID_SYMBOLS.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -284,14 +287,7 @@ export default function OrderTicket() {
           <select
             value={side}
             onChange={(e) => setSide(e.target.value as OrderCreate["side"])}
-            style={{
-              width: "100%",
-              padding: 10,
-              borderRadius: 10,
-              border: "1px solid #2a2f3b",
-              background: "#0f1115",
-              color: "white",
-            }}
+            style={controlStyle}
           >
             <option value="buy">buy</option>
             <option value="sell">sell</option>
@@ -314,12 +310,10 @@ export default function OrderTicket() {
             min={1}
             step={1}
             style={{
-              width: "100%",
-              padding: 10,
-              borderRadius: 10,
-              border: "1px solid #2a2f3b",
-              background: "#0f1115",
-              color: "white",
+              ...controlStyle,
+              appearance: "textfield",
+              WebkitAppearance: "none",
+              MozAppearance: "textfield",
             }}
           />
         </label>
